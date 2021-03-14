@@ -337,7 +337,6 @@ write-host "Checking to see if the SCVMM powershell module we need is loaded..."
 if (get-mymodule -name "virtualmachinemanager") {write-host "The SCVMM module is loaded..." -ForegroundColor Green}
 Clear-Variable vm*
 $script:jobgroup01 = [System.Guid]::NewGuid().ToString()
-#$vmhostname="hvih03.hvi.brown.edu"
 $VMMServerName = "phvmmcit.hvi.brown.edu"
 start-sleep -s 2
 
