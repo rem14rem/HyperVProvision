@@ -1,2 +1,6 @@
 # HyperVProvision
-# first
+# 
+
+This script will prompt the user for input:
+
+
