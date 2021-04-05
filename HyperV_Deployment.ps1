@@ -1,6 +1,3 @@
-﻿#
-# $ID$
-#
 function Main-Menu
 {
     do
@@ -44,12 +41,13 @@ function vmnetwork-menu
             
         #$nets = @(get-scvmnetwork -vmmserver $VMMServerName | where {$_.name -notlike "HVI*"} | sort-object -property name | Select-Object -ExpandProperty name)
         $nets = @(get-scvmnetwork -vmmserver $VMMServerName | where {$_.LogicalNetwork -like "$netstr"} | sort-object -property name | Select-Object -ExpandProperty name)
+        $nets = ,"0.0.0.0" + $nets
 
         $length = $nets.length
         $count = 1
         $index = 0
         Do {
-            Write-Host "$count." $nets[$index];$count+=1;$index+=1
+            Write-Host "$count. " $nets[$index];$count+=1;$index+=1
         }
         Until($count -gt $length)
             Write-Host "$count. Return to Main Menu`n"
@@ -67,8 +65,10 @@ $count+=1
 $index+=1
 }
 Until ($count -eq $menuresponse)
+
         $script:vmnetworkname= $nets[$index]  
         $script:vmnetwork = Get-SCVMNetwork -VMMServer $VMMServerName | Where {$_.name -like "$script:vmnetworkname*"}
+        
         hyperv-menu
 }
 
@@ -192,7 +192,7 @@ function hyperv-menu
         $menuresponse = read-host [Enter Selection]
         Switch ($menuresponse) {
             "1" {$script:vmhostcluster = "hvic01"
-                        $vmhostname="hvih11.hvi.brown.edu"
+                        $vmhostname="hvih07.hvi.brown.edu"
                         $netstr="*Internal*" }
             "2" {$script:vmhostcluster = "hvidmz01"
                         $vmhostname="hvih11.hvi.brown.edu" 
@@ -298,10 +298,12 @@ function create-vm
 
 
 # Insert the iso file into the virual DVD drive.
+if($script:vmos -eq "Windows") {
         Write-Host "Insert the ISO File into the Virtual DVD Drive .... " -NoNewLine
+        sleep -s 20
         Get-SCVirtualMachine -name $script:vmname | get-scvirtualdvddrive | set-scvirtualdvddrive -iso $iso -link | Out-Null
         Write-Host "Done"
-
+}
         start-sleep -s 2
 # Connect the VMs virtual nic to the requested subnet.
         Write-Host "Connecting VM Virtual NIC to subnet .... " -NoNewLine
@@ -340,6 +342,7 @@ write-host "Checking to see if the SCVMM powershell module we need is loaded..."
 if (get-mymodule -name "virtualmachinemanager") {write-host "The SCVMM module is loaded..." -ForegroundColor Green}
 Clear-Variable vm*
 $script:jobgroup01 = [System.Guid]::NewGuid().ToString()
+#$vmhostname="hvih03.hvi.brown.edu"
 $VMMServerName = "phvmmcit.hvi.brown.edu"
 start-sleep -s 2
 
