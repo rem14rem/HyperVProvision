@@ -1,4 +1,7 @@
-﻿function Main-Menu
+﻿#
+# $ID$
+#
+function Main-Menu
 {
     do
     {
