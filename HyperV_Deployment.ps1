@@ -1,5 +1,5 @@
 #
-# Version: 1.4.0.2
+# Version: 1.4.0.5
 #
 
 function Main-Menu
@@ -43,7 +43,6 @@ function vmnetwork-menu
         # We list available networks. User enters the network and we get the object and save it into a variable.
         $VMMServerName = "phvmmcit.hvi.brown.edu"
             
-        #$nets = @(get-scvmnetwork -vmmserver $VMMServerName | where {$_.name -notlike "HVI*"} | sort-object -property name | Select-Object -ExpandProperty name)
         $nets = @(get-scvmnetwork -vmmserver $VMMServerName | where {$_.LogicalNetwork -like "$netstr"} | sort-object -property name | Select-Object -ExpandProperty name)
         $nets = ,"0.0.0.0" + $nets
 
@@ -97,7 +96,8 @@ function vmdisk-menu
         $script:vmdisk= read-Host "How much Disk in GB"  
         Write-Host "Checking free disk space ...."  
 
-        $luns = Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -NotMatch "-|11856"} | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending  
+        #$luns = Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -NotMatch "-|11856"} | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending  
+	$luns = Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -notlike "*11856*" -and $_.Name -notlike "*-p*-d" -and $_.Name -notlike "*-c*-d" -and $_.Name -notlike "*-p*"} | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending
         $freespace = $luns[0].FreeSpace
         $vmlun = $luns[0].Name
         $remspace = [math]::round(($luns[0].FreeSpace / 1GB))
