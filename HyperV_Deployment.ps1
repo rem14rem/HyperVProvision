@@ -1,5 +1,5 @@
 #
-# Version: 1.4.0.5
+# Version: 1.4.0.6
 #
 
 function Main-Menu
@@ -191,18 +191,31 @@ function hyperv-menu
           if($script:vmos -eq "") { $script:vmos = "Windows" }
 
         Clear-Host
+        $rand_count = 1
         Write-Host "Select Host Cluster:"
         Write-Host "1. HVIC01 (internal) `n2. HVIDMZ01 (dmz) `n3. HVIDCPOD01 (dcpod)`n"
         $menuresponse = read-host [Enter Selection]
         Switch ($menuresponse) {
             "1" {$script:vmhostcluster = "hvic01"
-                        $vmhostname="hvih07.hvi.brown.edu"
+                        $HostGroup =  Get-SCVMHost -VMHostGroup Internal | sort-object -property name | Select-Object -ExpandProperty name
+                        $vmhostname = Get-Random -InputObject $HostGroup -Count $rand_count
+                        Write-Host "Choosing $vmhostname as host to install VM." -ForegroundColor Green
+                        sleep -s 3
+                        #$vmhostname="hvih07.hvi.brown.edu"
                         $netstr="*Internal*" }
             "2" {$script:vmhostcluster = "hvidmz01"
-                        $vmhostname="hvih11.hvi.brown.edu" 
+                        $HostGroup =  Get-SCVMHost -VMHostGroup DMZ | sort-object -property name | Select-Object -ExpandProperty name
+                        $vmhostname = Get-Random -InputObject $HostGroup -Count $rand_count
+                        Write-Host "Choosing $vmhostname as host to install VM." -ForegroundColor Green
+                        sleep -s 3
+                        #$vmhostname="hvih11.hvi.brown.edu" 
                         $netstr="*DMZ*"}
             "3" {$script:vmhostcluster = "hvidcpod01"
-                        $vmhostname="hvih01.hvi.brown.edu" 
+                        $HostGroup =  Get-SCVMHost -VMHostGroup DCPOD | sort-object -property name | Select-Object -ExpandProperty name
+                        $vmhostname = Get-Random -InputObject $HostGroup -Count $rand_count
+                        Write-Host "Choosing $vmhostname as host to install VM." -ForegroundColor Green
+                        sleep -s 3
+                        #$vmhostname="hvih01.hvi.brown.edu" 
                         $netstr="*DCPOD*"  }
             }
 
