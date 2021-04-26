@@ -1,5 +1,5 @@
 #
-# Version: 1.4.0.6
+# Version: 1.4.0.7
 #
 
 function Main-Menu
@@ -338,6 +338,18 @@ if($script:vmos -eq "Windows") {
         Set-SCVirtualMachine -VM $script:vmname -Tag $script:vmtag | Out-Null
         Write-Host  "Done"
         start-sleep -s 2
+
+#send email
+	$html = "<html>"
+	$html += "<body><table border=2><tr><th style=padding:10px>VM Name</th><th style=padding:10px>VM Memory</th><th style=padding:10px>VM Network</th>"
+	$html += "<th style=padding:10px>VM CPU</th><th style=padding:10px>VM Disk</th><th style=padding:10px>VM Host</th><th style=padding:10px>Backup Tag</th><th style=padding:10px>Prod</th></tr>"
+	$html += "<tr><td style=padding:10px>" + $script:vmname + "</td><td style=padding:10px; text-align:center >" + $script:vmram + "</td><td style=padding:10px;text-align:center>" + $script:vmnetwork + "</td>"
+	$html += "<td style=padding:10px; text-align:center >" + $script:vmcpu + "</td><td style=padding:10px;text-align:center>" + $script:vmdisk + "</td>"
+	$html += "<td style=padding:10px; text-align:center >" + $script:vmhostcluster + "</td><td style=padding:10px;text-align:center>" + $script:vmtag + "</td>"
+	$html += "<td style=padding:10px;text-align:center>" + $script:vmprod +"</td>/tr>"
+	$html += "</table></body></html>"
+	$body =  $html
+	Send-MailMessage -From 'HyperV_VM_Creation@brown.edu' -To 'Robert_Morse@brown.edu' -Subject 'HyperV VM Created' -SmtpServer 'mail-relay.brown.edu' -Body "$body" -BodyAsHtml
 }
 Function Get-MyModule
 {
