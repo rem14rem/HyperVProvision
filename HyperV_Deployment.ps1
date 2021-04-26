@@ -346,7 +346,7 @@ if($script:vmos -eq "Windows") {
 	$html += "<tr><td style=padding:10px>" + $script:vmname + "</td><td style=padding:10px; text-align:center >" + $script:vmram + "</td><td style=padding:10px;text-align:center>" + $script:vmnetwork + "</td>"
 	$html += "<td style=padding:10px; text-align:center >" + $script:vmcpu + "</td><td style=padding:10px;text-align:center>" + $script:vmdisk + "</td>"
 	$html += "<td style=padding:10px; text-align:center >" + $script:vmhostcluster + "</td><td style=padding:10px;text-align:center>" + $script:vmtag + "</td>"
-	$html += "<td style=padding:10px;text-align:center>" + $script:vmprod +"</td>/tr>"
+	$html += "<td style=padding:10px;text-align:center>" + $script:vmprod +"</td></tr>"
 	$html += "</table></body></html>"
 	$body =  $html
 	Send-MailMessage -From 'HyperV_VM_Creation@brown.edu' -To 'Robert_Morse@brown.edu' -Subject 'HyperV VM Created' -SmtpServer 'mail-relay.brown.edu' -Body "$body" -BodyAsHtml
