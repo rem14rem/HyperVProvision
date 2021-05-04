@@ -1,6 +1,6 @@
 #
 # 
-# Version 1.0.1
+# Version 1.0.2
 #
 #
 If ((test-path -Path $args[0]))
@@ -16,19 +16,26 @@ $Targets = import-csv -Path $filepath -Delimiter "," -header "Name", "cluster", 
 ForEach ($Target in $Targets)
 {
 
-    $VM = Get-SCVirtualMachine -name $Target.name
+    if ($Target.name  -like "#*") {
+              $aa = $Target.name -replace "#",''
+              Write-Host $aa "Machine not ready for adustment. Skipping.`n"-ForegroundColor Yellow
+              continue
+              }
 
-  Write-host $Target.name "Shutting down VM."
-  Get-SCVirtualMachine -name $Target.name | Stop-SCVirtualMachine | out-null
+
+	$VM = Get-SCVirtualMachine -name $Target.name
+
+	Write-host $Target.name "Shutting down VM."
+	Get-SCVirtualMachine -name $Target.name | Stop-SCVirtualMachine | out-null
  
- sleep -s 5
+	sleep -s 5
 
 
-#region Set Dynamic Memory
+	#region Set Dynamic Memory
 
-Write-Host $VM.name "Setting Dynamic Memory"
+	Write-Host $VM.name "Setting Dynamic Memory"
 
-Switch ($VM.memory){
+  	Switch ($VM.memory){
 
 "1024" {Set-SCVirtualMachine -VM $VM -DynamicMemoryEnabled $True -MemoryMB 1024 -DynamicMemoryMinimumMB 512 -DynamicMemoryBufferPercentage 20 -DynamicMemoryMaximumMB 2048 | Out-Null}
 
