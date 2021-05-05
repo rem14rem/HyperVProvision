@@ -341,9 +341,9 @@ if($script:vmos -eq "Windows") {
 
 #send email
 	$html = "<html>"
-	$html += "<body><table border=2><tr><th style=padding:10px>VM Name</th><th style=padding:10px>VM Memory</th><th style=padding:10px>VM Network</th>"
+	$html += "<body><table border=2><tr><th style=padding:10px>VM Name</th><th style=padding:10px>Owner</th><th style=padding:10px>VM Network</th><th style=padding:10px>VM Memory</th>"
 	$html += "<th style=padding:10px>VM CPU</th><th style=padding:10px>VM Disk</th><th style=padding:10px>VM Host</th><th style=padding:10px>Backup Tag</th><th style=padding:10px>Prod</th></tr>"
-	$html += "<tr><td style=padding:10px>" + $script:vmname + "</td><td style=padding:10px; text-align:center >" + $script:vmram + "</td><td style=padding:10px;text-align:center>" + $script:vmnetwork + "</td>"
+	$html += "<tr><td style=padding:10px>" + $script:vmname + "</td><td style=padding:10px; text-align:center >" + $env:USERNAME + "</td><td style=padding:10px; text-align:center >" + $script:vmnetwork + "</td><td style=padding:10px;text-align:center>" + $script:vmram + "</td>"
 	$html += "<td style=padding:10px; text-align:center >" + $script:vmcpu + "</td><td style=padding:10px;text-align:center>" + $script:vmdisk + "</td>"
 	$html += "<td style=padding:10px; text-align:center >" + $script:vmhostcluster + "</td><td style=padding:10px;text-align:center>" + $script:vmtag + "</td>"
 	$html += "<td style=padding:10px;text-align:center>" + $script:vmprod +"</td></tr>"
@@ -371,7 +371,6 @@ write-host "Checking to see if the SCVMM powershell module we need is loaded..."
 if (get-mymodule -name "virtualmachinemanager") {write-host "The SCVMM module is loaded..." -ForegroundColor Green}
 Clear-Variable vm*
 $script:jobgroup01 = [System.Guid]::NewGuid().ToString()
-#$vmhostname="hvih03.hvi.brown.edu"
 $VMMServerName = "phvmmcit.hvi.brown.edu"
 start-sleep -s 2
 
