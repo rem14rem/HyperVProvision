@@ -346,7 +346,7 @@ if($script:vmos -eq "Windows") {
 	$html += "<td style=padding:10px;text-align:center>" + $script:vmname + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $env:USERName + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmnetwork + "</td>"
-        $html +- "<td style=padding:10px;text-align:center>" + $script:vmram + "</td>"
+        $html += "<td style=padding:10px;text-align:center>" + $script:vmram + "</td>"
     	$html += "<td style=padding:10px;text-align:center>" + $script:vmcpu + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmdisk + "</td>"
     	$html += "<td style=padding:10px;text-align:center>" + $script:vmhostcluster + "</td>"
