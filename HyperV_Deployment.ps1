@@ -1,5 +1,5 @@
 #
-# Version: 1.4.0.9
+# Version: 1.4.0.10
 #
 
 function Main-Menu
@@ -354,7 +354,7 @@ if($script:vmos -eq "Windows") {
         $html += "<td style=padding:10px;text-align:center>" + $script:vmprod +"</td></tr>"
 	$html += "</table></body></html>"
 	$body =  $html
-	Send-MailMessage -From 'HyperV_VM_Creation@brown.edu' -To 'CIS-VO@brown.edu' -Subject 'HyperV VM Created' -SmtpServer 'mail-relay.brown.edu' -Body "$body" -BodyAsHtml
+	Send-MailMessage -From 'HyperV_VM_Creation@brown.edu' -To 'CIS-VO@brown.edu' -Bcc 'virtualization-and-or-aaaadx7q6nbsbtu7esldlhfn2u@brown-cis.slack.com' -Subject 'HyperV VM Created' -SmtpServer 'mail-relay.brown.edu' -Body "$body" -BodyAsHtml
 }
 Function Get-MyModule
 {
