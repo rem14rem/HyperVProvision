@@ -1,6 +1,6 @@
 #
 #
-#  Version 1.4.0.8
+#  Version 1.4.0.9
 #
 function Main-Menu
 {
@@ -33,6 +33,7 @@ function vmname-menu
         $script:vmname=read-Host "Enter a name for the new VM "  
         $script:vmdesc= read-host "Enter a description for the new VM "
         $script:vmdiskname = $script:vmname + "_Disk_1"
+	$script:vmname = $script:vmname.ToLower()
         hyperv-menu
 }
 
