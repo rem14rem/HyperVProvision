@@ -1,5 +1,5 @@
 #
-# Version: 1.4.0.11
+# Version: 1.4.0.12
 #
 
 function Main-Menu
@@ -98,7 +98,7 @@ function vmdisk-menu
         Write-Host "Checking free disk space ...."  
 
         #$luns = Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -NotMatch "-|11856"} | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending  
-	$luns = Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -notlike "*11856*" -and $_.Name -notlike "*-p*-d" -and $_.Name -notlike "*-c*-d" -and $_.Name -notlike "*-p*"} | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending
+	$luns = Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -notlike "*11856*" -and $_.Name -notlike "*-repl-*" -and $_.Name -notlike "*-p*-d" -and $_.Name -notlike "*-c*-d" -and $_.Name -notlike "*-p*"} | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending
         $freespace = $luns[0].FreeSpace
         $vmlun = $luns[0].Name
         $remspace = [math]::round(($luns[0].FreeSpace / 1GB))
