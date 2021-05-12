@@ -1,6 +1,6 @@
 #
 #
-#  Version 1.4.0.9
+#  Version 1.4.0.10
 #
 function Main-Menu
 {
@@ -146,7 +146,7 @@ function printvar-menu
         Write-Output "VM CPU:          $script:vmcpu"
         Write-Output "VM DISK:         $script:vmdisk GB"
         Write-Output "VM Diskname      $script:vmdiskname"
-        Write-host "VM result:       $script:vmresult"
+        Write-host "VM OS Desc:          $script:vmosdesc"
         Write-Host "`n`n"
         pause
         hyperv-menu
@@ -168,6 +168,28 @@ function vmtag-menu
 
         hyperv-menu
 }
+function select-osdesc
+{
+        Clear-Host
+        Write-Host "Select Operating System:"
+        Write-Host "1. Windows Server 2019 Standard `n2. Windows Server 2016 Standard  `n3. Windows Server 2012 R2 Standard `n4. 64-bit edtion of Windows 10 `n5. CentOS Lunux 7 (64bit)  `n6. Debian GNU/Linux 8 (64 bit) `n7. Other (64 bit) `n8. Ubuntu Linux 18.04 (64 bit)  `n9. Red Hat Enterprise Linux 5 `n10. Red Hat Enterprise Linux 6 (64 bit) `n11. Red Hat Enterprise Linux 7 (64 bit)  `n12. Red Hat Enterprise Linux 7.3 (64 bit)`n"
+        $tagmenuresponse = read-host [Enter Selection]
+        Switch ($tagmenuresponse) {
+            "1" {$script:vmosdesc = "Windows Server 2019 Standard" }
+            "2" {$script:vmosdesc = "Windwows Server 2016 Standard" }
+            "3" {$script:vmosdesc = "Windows Server 2012 R2 Standard" }
+            "4" {$script:vmosdesc = "64-bit edtion of Windows 10" }
+            "5" {$script:vmosdesc = "CentOS Lunux 7 (64bit)" }
+            "6" {$script:vmosdesc = "Debian GNU/Linux 8 (64 bit)" }
+            "7" {$script:vmosdesc = "Other (64 bit)" }
+            "8" {$script:vmosdesc = "Ubuntu Linux 18.04 (64 bit)" }
+            "9" {$script:vmosdesc = "Red Hat Enterprise Linux 5" }
+            "10" {$script:vmosdesc = "Red Hat Enterprise Linux 6 (64 bit)" }
+            "11" {$script:vmosdesc = "Red Hat Enterprise Linux 7 (64 bit)" }
+            "12" {$script:vmosdesc = "Red Hat Enterprise Linux 7.3 (64 bit)" }
+            }
+        
+}
 function vmware-menu
 {
         Write-Host "`nThis functionality is not ready yet. Check back soon!`n" -ForegroundColor Red
@@ -185,6 +207,8 @@ function hyperv-menu
   
           $script:vmos= read-Host "Which Operating System? ([Windows]|Linux) "
           if($script:vmos -eq "") { $script:vmos = "Windows" }
+
+        select-osdesc
 
         Clear-Host
         $rand_count = 1
