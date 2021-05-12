@@ -372,20 +372,25 @@ if($script:vmos -eq "Windows") {
 
 
 #send email
-	$html = "<html>"
-	$html += "<body><table border=2><tr><th style=padding:10px>VM Name</th><th style=padding:10px>Owner</th><th style=padding:10px>VM Network</th><th style=padding:10px>VM Memory</th>"
-	$html += "<th style=padding:10px>VM CPU</th><th style=padding:10px>VM Disk</th><th style=padding:10px>VM Host</th><th style=padding:10px>Backup Tag</th><th style=padding:10px>Prod</th></tr><tr>"
-	$html += "<td style=padding:10px;text-align:center>" + $script:vmname + "</td>"
+        $html = "<html>"
+        $html += "<body><table border=2><tr><th style=padding:10px>VM Name</th>"
+        $html += "<th style=padding:10px>Owner</th><th style=padding:10px>VM Network</th><th style=padding:10px>VM Memory</th>"
+        $html += "<th style=padding:10px>VM CPU</th><th style=padding:10px>VM Disk</th>"
+        $htmo += "<th style=padding:10px>VM Host</th><th style=padding:10px>Backup Tag</th>"
+        $html += "<th style=padding:10px>Operating System</th><th style=padding:10px>Prod</th></tr><tr>"
+        $html += "<td style=padding:10px;text-align:center>" + $script:vmname + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $env:USERName + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmnetwork + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmram + "</td>"
-    	$html += "<td style=padding:10px;text-align:center>" + $script:vmcpu + "</td>"
+        $html += "<td style=padding:10px;text-align:center>" + $script:vmcpu + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmdisk + "</td>"
-    	$html += "<td style=padding:10px;text-align:center>" + $vmhostname + "</td>"
+        $html += "<td style=padding:10px;text-align:center>" + $vmhostname + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmtag + "</td>"
+        $html += "<td style=padding:10px;text-align:center>" + $script:vmosdesc + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmprod +"</td></tr>"
-	$html += "</table></body></html>"
-	$body =  $html
+        $html += "</table></body></html>"
+        $body =  $html
+
 	Send-MailMessage -From 'HyperV_VM_Creation@brown.edu' -To 'CIS-VO@brown.edu' -Bcc 'virtualization-and-or-aaaadx7q6nbsbtu7esldlhfn2u@brown-cis.slack.com' -Subject 'HyperV VM Created' -SmtpServer 'mail-relay.brown.edu' -Body "$body" -BodyAsHtml
 }
 Function Get-MyModule
