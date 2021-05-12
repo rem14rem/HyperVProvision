@@ -145,7 +145,7 @@ function printvar-menu
         Write-Output "VM CPU:          $script:vmcpu"
         Write-Output "VM DISK:         $script:vmdisk GB"
         Write-Output "VM Diskname      $script:vmdiskname"
-        Write-host "VM result:       $script:vmos"
+        Write-host "VM result:       $script:vmosdesc"
         Write-Host "`n`n"
         pause
         hyperv-menu
@@ -180,18 +180,18 @@ function select-os
         Write-Host "1. Windows Server 2019 Standard `n2. Windows Server 2016 Standard  `n3. Windows Server 2012 R2 Standard `n4. 64-bit edtion of Windows 10 `n5. CentOS Lunux 7 (64bit)  `n6. Debian GNU/Linux 8 (64 bit) `n7. Other (64 bit) `n8. Ubuntu Linux 18.04 (64 bit)  `n9. Red Hat Enterprise Linux 5 `n10. Red Hat Enterprise Linux 6 (64 bit) `n11. Red Hat Enterprise Linux 7 (64 bit)  `n12. Red Hat Enterprise Linux 7.3 (64 bit)`n"
         $tagmenuresponse = read-host [Enter Selection]
         Switch ($tagmenuresponse) {
-            "1" {$script:vmos = "Windows Server 2019 Standard" }
-            "2" {$script:vmos = "Windwows Server 2016 Standard" }
-            "3" {$script:vmos = "Windows Server 2012 R2 Standard" }
-            "4" {$script:vmos = "64-bit edtion of Windows 10" }
-            "5" {$script:vmos = "CentOS Lunux 7 (64bit)" }
-            "6" {$script:vmos = "Debian GNU/Linux 8 (64 bit)" }
-            "7" {$script:vmos = "Other (64 bit)" }
-            "8" {$script:vmos = "Ubuntu Linux 18.04 (64 bit)" }
-            "9" {$script:vmos = "Red Hat Enterprise Linux 5" }
-            "10" {$script:vmos = "Red Hat Enterprise Linux 6 (64 bit)" }
-            "11" {$script:vmos = "Red Hat Enterprise Linux 7 (64 bit)" }
-            "12" {$script:vmos = "Red Hat Enterprise Linux 7.3 (64 bit)" }
+            "1" {$script:vmosdesc = "Windows Server 2019 Standard" }
+            "2" {$script:vmosdesc = "Windwows Server 2016 Standard" }
+            "3" {$script:vmosdesc = "Windows Server 2012 R2 Standard" }
+            "4" {$script:vmosdesc = "64-bit edtion of Windows 10" }
+            "5" {$script:vmosdesc = "CentOS Lunux 7 (64bit)" }
+            "6" {$script:vmosdesc = "Debian GNU/Linux 8 (64 bit)" }
+            "7" {$script:vmosdesc = "Other (64 bit)" }
+            "8" {$script:vmosdesc = "Ubuntu Linux 18.04 (64 bit)" }
+            "9" {$script:vmosdesc = "Red Hat Enterprise Linux 5" }
+            "10" {$script:vmosdesc = "Red Hat Enterprise Linux 6 (64 bit)" }
+            "11" {$script:vmosdesc = "Red Hat Enterprise Linux 7 (64 bit)" }
+            "12" {$script:vmosdesc = "Red Hat Enterprise Linux 7.3 (64 bit)" }
             }
         
 }
@@ -363,6 +363,13 @@ if($script:vmos -eq "Windows") {
         Set-SCVirtualMachine -VM $script:vmname -Tag $script:vmtag | Out-Null
         Write-Host  "Done"
         start-sleep -s 2
+
+#setting the os description tag
+        Write-Host "Setting Operating System description ..... " -NoNewLine
+        Set-SCVirtualMachine -VM $script:vmname -Tag $script:vmosdesc | Out-Null
+        Write-Host  "Done"
+        start-sleep -s 2
+
 
 #send email
 	$html = "<html>"

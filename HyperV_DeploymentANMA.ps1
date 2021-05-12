@@ -1,6 +1,6 @@
 #
 #
-#  Version 1.4.0.10
+#  Version 1.4.0.12
 #
 function Main-Menu
 {
@@ -343,6 +343,12 @@ if($script:vmos -eq "Windows") {
 #setting the backup tag
         Write-Host "Setting Backup Tag  ..... " -NoNewLine 
         Set-SCVirtualMachine -VM $script:vmname -Tag $script:vmtag | Out-Null
+        Write-Host  "Done"
+        start-sleep -s 2
+
+#setting the os description tag
+        Write-Host "Setting Operating System description ..... " -NoNewLine
+	Set-SCVirtualMachine -VM $script:vmname -Tag $script:vmosdesc | Out-Null
         Write-Host  "Done"
         start-sleep -s 2
 
