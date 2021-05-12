@@ -172,14 +172,14 @@ function select-osdesc
 {
         Clear-Host
         Write-Host "Select Operating System:"
-        Write-Host "1. Windows Server 2019 Standard `n2. Windows Server 2016 Standard  `n3. Windows Server 2012 R2 Standard `n4. 64-bit edtion of Windows 10 `n5. CentOS Lunux 7 (64bit)  `n6. Debian GNU/Linux 8 (64 bit) `n7. Other (64 bit) `n8. Ubuntu Linux 18.04 (64 bit)  `n9. Red Hat Enterprise Linux 5 `n10. Red Hat Enterprise Linux 6 (64 bit) `n11. Red Hat Enterprise Linux 7 (64 bit)  `n12. Red Hat Enterprise Linux 7.3 (64 bit)`n"
+        Write-Host "1. Windows Server 2019 Standard `n2. Windows Server 2016 Standard  `n3. Windows Server 2012 R2 Standard `n4. 64-bit edtion of Windows 10 `n5. CentOS Linux 7 (64bit)  `n6. Debian GNU/Linux 8 (64 bit) `n7. Other (64 bit) `n8. Ubuntu Linux 18.04 (64 bit)  `n9. Red Hat Enterprise Linux 5 `n10. Red Hat Enterprise Linux 6 (64 bit) `n11. Red Hat Enterprise Linux 7 (64 bit)  `n12. Red Hat Enterprise Linux 7.3 (64 bit)`n"
         $tagmenuresponse = read-host [Enter Selection]
         Switch ($tagmenuresponse) {
             "1" {$script:vmosdesc = "Windows Server 2019 Standard" }
             "2" {$script:vmosdesc = "Windwows Server 2016 Standard" }
             "3" {$script:vmosdesc = "Windows Server 2012 R2 Standard" }
             "4" {$script:vmosdesc = "64-bit edtion of Windows 10" }
-            "5" {$script:vmosdesc = "CentOS Lunux 7 (64bit)" }
+            "5" {$script:vmosdesc = "CentOS Linux 7 (64bit)" }
             "6" {$script:vmosdesc = "Debian GNU/Linux 8 (64 bit)" }
             "7" {$script:vmosdesc = "Other (64 bit)" }
             "8" {$script:vmosdesc = "Ubuntu Linux 18.04 (64 bit)" }
@@ -356,7 +356,7 @@ if($script:vmos -eq "Windows") {
 	$html += "<body><table border=2><tr><th style=padding:10px>VM Name</th>"	
 	$html += "<th style=padding:10px>Owner</th><th style=padding:10px>VM Network</th><th style=padding:10px>VM Memory</th>"
 	$html += "<th style=padding:10px>VM CPU</th><th style=padding:10px>VM Disk</th>"
-	$htmo += "<th style=padding:10px>VM Host</th><th style=padding:10px>Backup Tag</th>"
+	$html += "<th style=padding:10px>VM Host</th><th style=padding:10px>Backup Tag</th>"
 	$html += "<th style=padding:10px>Operating System</th><th style=padding:10px>Prod</th></tr><tr>"
 	$html += "<td style=padding:10px;text-align:center>" + $script:vmname + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $env:USERName + "</td>"
