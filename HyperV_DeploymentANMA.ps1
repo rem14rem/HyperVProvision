@@ -1,6 +1,6 @@
 #
 #
-#  Version 1.4.0.12
+#  Version 1.4.0.14
 #
 function Main-Menu
 {
@@ -346,6 +346,8 @@ if($script:vmos -eq "Windows") {
         Write-Host  "Done"
         start-sleep -s 2
 
+	$script:create_date = Get-Date -Format "dddd MM/dd/yyyy HH:mm K"
+
 #setting the os description tag
         Write-Host "Setting Operating System description ..... " -NoNewLine
 	Set-SCVirtualMachine -VM $script:vmname -Tag $script:vmosdesc | Out-Null
@@ -356,6 +358,7 @@ if($script:vmos -eq "Windows") {
 	$html += "<body><table border=2><tr><th style=padding:10px>VM Name</th>"	
 	$html += "<th style=padding:10px>Owner</th><th style=padding:10px>VM Network</th><th style=padding:10px>VM Memory</th>"
 	$html += "<th style=padding:10px>VM CPU</th><th style=padding:10px>VM Disk</th>"
+        $html += "<th style=padding:10px>Create Date</th>"
 	$html += "<th style=padding:10px>VM Host</th><th style=padding:10px>Backup Tag</th>"
 	$html += "<th style=padding:10px>Operating System</th><th style=padding:10px>Prod</th></tr><tr>"
 	$html += "<td style=padding:10px;text-align:center>" + $script:vmname + "</td>"
@@ -364,14 +367,18 @@ if($script:vmos -eq "Windows") {
         $html += "<td style=padding:10px;text-align:center>" + $script:vmram + "</td>"
     	$html += "<td style=padding:10px;text-align:center>" + $script:vmcpu + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmdisk + "</td>"
+        $html += "<td style=padding:10px;text-align:center>" + $script:create_date + "</td>"
     	$html += "<td style=padding:10px;text-align:center>" + $vmhostname + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmtag + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmosdesc + "</td>"
         $html += "<td style=padding:10px;text-align:center>" + $script:vmprod +"</td></tr>"
     	$html += "</table></body></html>"
     	$body =  $html
+
+
 	    Send-MailMessage -From 'HyperV_VM_Creation@brown.edu' -To 'robert_morse@brown.edu' -Bcc 'virtualization-and-or-aaaadx7q6nbsbtu7esldlhfn2u@brown-cis.slack.com' -Subject 'ANMA HyperV VM Created' -SmtpServer 'mail-relay.brown.edu' -Body "$body" -BodyAsHtml
-	    
+
+	main-menu	    
 }     
 Function Get-MyModule
 {
