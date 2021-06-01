@@ -1,6 +1,6 @@
 #
 # 
-# Version 1.0.2
+# Version 1.0.2.1
 #
 #
 If ((test-path -Path $args[0]))
