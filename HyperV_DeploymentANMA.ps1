@@ -1,11 +1,14 @@
 #
 #
-#  Version 1.4.0.14
+#  Version 1.4.0.15
 #
 function Main-Menu
 {
     do
     {
+        Clear-Variable vm* -Scope Global
+        Clear-Variable script* -Scope Global
+
         Clear-Host
         Write-Host "1. HyperV VM Provisioning `n2. VMWare VM Provisioning `n3. Quit`n"
         $menuresponse = read-host [Enter Selection]
@@ -179,7 +182,7 @@ function select-osdesc
             "2" {$script:vmosdesc = "Windwows Server 2016 Standard" }
             "3" {$script:vmosdesc = "Windows Server 2012 R2 Standard" }
             "4" {$script:vmosdesc = "64-bit edtion of Windows 10" }
-            "5" {$script:vmosdesc = "CentOS Linux 7 (64bit)" }
+            "5" {$script:vmosdesc = "CentOS Linux 7 (64 bit)" }
             "6" {$script:vmosdesc = "Debian GNU/Linux 8 (64 bit)" }
             "7" {$script:vmosdesc = "Other (64 bit)" }
             "8" {$script:vmosdesc = "Ubuntu Linux 18.04 (64 bit)" }
@@ -189,6 +192,35 @@ function select-osdesc
             "12" {$script:vmosdesc = "Red Hat Enterprise Linux 7.3 (64 bit)" }
             }
         
+}
+function google-it
+{
+    #Import the Google Module
+    Import-Module UMN-Google
+            
+    # Set security protocol to TLS 1.2 to avoid TLS errors
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    
+    # Google API Authorization
+    $scope = "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file"
+    #Put the cert file somewhere on the system and change the path accordingly
+    $certPath = "C:\Users\adm_rmorse\Documents\powershell-cmenard-b4405ad18f0c.p12"
+    #This is the Google service account
+    $iss = 'svc-pshell@powershell-cmenard.iam.gserviceaccount.com'
+    $certPswd = 'notasecret'
+    $accessToken = Get-GOAuthTokenService -scope $scope -certPath $certPath -certPswd $certPswd -iss $iss
+    
+    #Change the $SpreadsheetID variable with the FileID of your file
+    $SpreadsheetID = "1MLtizbtufNWl1-DoaAix191Uf0PXi48f5lziXegvg0g"
+    
+   
+    #Below is a sample of how to create the array to store the items you want to append to the GSheet
+    $import = New-Object System.Collections.ArrayList($null)
+    $import.Add( @($script:vmname,$env:USERName,$script:vmhostcluster,$script:vmnetwork,$script:vmram,$script:vmcpu,$script:vmdisk,$script:create_date,$vmhostname,$script:vmtag,$script:vmosdesc,$script:vmprod)) | Out-Null
+    
+   
+    #This is where you actually write the data to the GSheet - replace the -sheetName with your sheetName (or if it is just Sheet 1 replace with that)
+    Set-GSheetData -accessToken $accessToken -append -sheetName "Sheet1" -spreadSheetID $SpreadsheetID -values $import -Debug -Verbose
 }
 function vmware-menu
 {
@@ -377,6 +409,8 @@ if($script:vmos -eq "Windows") {
 
 
 	    Send-MailMessage -From 'HyperV_VM_Creation@brown.edu' -To 'robert_morse@brown.edu' -Bcc 'virtualization-and-or-aaaadx7q6nbsbtu7esldlhfn2u@brown-cis.slack.com' -Subject 'ANMA HyperV VM Created' -SmtpServer 'mail-relay.brown.edu' -Body "$body" -BodyAsHtml
+
+	google-it
 
 	main-menu	    
 }     
