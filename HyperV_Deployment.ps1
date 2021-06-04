@@ -1,5 +1,5 @@
 #
-# Version: 1.4.0.17
+# Version: 1.4.0.18
 #
 
 function Main-Menu
@@ -209,7 +209,7 @@ function google-it
     # Google API Authorization
     $scope = "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file"
     #Put the cert file somewhere on the system and change the path accordingly
-    $certPath = "C:\Users\adm_rmorse\Documents\powershell-cmenard-b4405ad18f0c.p12"
+    $certPath = "C:\AdminFilies\powershell-cmenard-b4405ad18f0c.p12"
     #This is the Google service account
     $iss = 'svc-pshell@powershell-cmenard.iam.gserviceaccount.com'
     $certPswd = 'notasecret'
