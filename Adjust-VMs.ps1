@@ -1,6 +1,6 @@
 #
 # 
-# Version 1.0.2.1
+# Version 1.0.3
 #
 #
 If ((test-path -Path $args[0]))
@@ -58,6 +58,9 @@ ForEach ($Target in $Targets)
 "40960" {Set-SCVirtualMachine -VM $VM -DynamicMemoryEnabled $True -MemoryMB 8192 -DynamicMemoryMinimumMB 512 -DynamicMemoryBufferPercentage 20 -DynamicMemoryMaximumMB 40960 | Out-Null}
 
 "51200" {Set-SCVirtualMachine -VM $VM -DynamicMemoryEnabled $True -MemoryMB 8192 -DynamicMemoryMinimumMB 512 -DynamicMemoryBufferPercentage 20 -DynamicMemoryMaximumMB 51200 | Out-Null}
+
+Default {write-host $VM.name "No Memory Value Matches. Setting Max Memory to 8gb"-ForegroundColor Yellow
+         Set-SCVirtualMachine -VM $VM -DynamicMemoryEnabled $True -MemoryMB 8192 -DynamicMemoryMinimumMB 512 -DynamicMemoryBufferPercentage 20 -DynamicMemoryMaximumMB 8192 | Out-Null }
 
 }
 
