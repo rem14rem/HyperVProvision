@@ -25,12 +25,15 @@ ForEach ($Target in $Targets)
 
 	$VM = Get-SCVirtualMachine -name $Target.name
 
+    if ($VM.Status -ne "PowerOff") {
 	Write-host $Target.name "Shutting down VM."
 	Get-SCVirtualMachine -name $Target.name | Stop-SCVirtualMachine | out-null
  
 	sleep -s 5
-
-
+    } else {
+  	Write-host $Target.name "Already powered off."
+    }
+    
 	#region Set Dynamic Memory
 
 	Write-Host $VM.name "Setting Dynamic Memory"
