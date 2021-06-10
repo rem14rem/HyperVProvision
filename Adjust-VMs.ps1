@@ -31,7 +31,7 @@ ForEach ($Target in $Targets)
  
 	sleep -s 5
     } else {
-  	Write-host $Target.name "Already powered off."
+  	Write-host $Target.name "Already powered off." -ForegroundColor Yellow
     }
     
 	#region Set Dynamic Memory
