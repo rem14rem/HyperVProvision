@@ -1,4 +1,4 @@
-#
+﻿#
 # Version: 1.5.0.1
 #
 
@@ -17,7 +17,7 @@ function Main-Menu
                                  hyperv-menu}
             "2" {$script:hypervisor = "vmware"
                                  vmware-menu}
-           
+
             "3" {exit}
         }
     }
@@ -31,22 +31,22 @@ function vmhost-menu
 }
 function vmname-menu
 {
-   
+
         Clear-Host
-        $script:vmname=read-Host "Enter a name for the new VM "  
+        $script:vmname=read-Host "Enter a name for the new VM "
         $script:vmdesc= read-host "Enter a description for the new VM "
         $script:vmdiskname = $script:vmname + "_Disk_1"
-	$script:vmname = $script:vmname.ToLower()
+        $script:vmname = $script:vmname.ToLower()
         hyperv-menu
 }
 
 function vmnetwork-menu
 {
-   
+
         Clear-Host
         # We list available networks. User enters the network and we get the object and save it into a variable.
         $VMMServerName = "phvmmcit.hvi.brown.edu"
-            
+
         $nets = @(get-scvmnetwork -vmmserver $VMMServerName | where {$_.LogicalNetwork -like "$netstr"} | sort-object -property name | Select-Object -ExpandProperty name)
         $nets = ,"0.0.0.0" + $nets
 
@@ -73,56 +73,68 @@ $index+=1
 }
 Until ($count -eq $menuresponse)
 
-        $script:vmnetworkname= $nets[$index]  
+        $script:vmnetworkname= $nets[$index]
         $script:vmnetwork = Get-SCVMNetwork -VMMServer $VMMServerName | Where {$_.name -like "$script:vmnetworkname*"}
-        
+
         hyperv-menu
 }
 
 function vmram-menu
 {
         Clear-Host
-        $script:vmram= read-Host "How much RAM in GB "  
-        $vmram_num = [int]::Parse($script:vmram)  
+        $script:vmram= read-Host "How much RAM in GB "
+        $vmram_num = [int]::Parse($script:vmram)
+        if ($vmram_num -ge 64) 
+        { Write-Host "Memory seems pretty high. Are you sure?"-ForegroundColor Yellow
+            pause
+        }
         $vmram_num *= 1024
         hyperv-menu
 }
 function vmcpu-menu
 {
-   
+
         Clear-Host
-        $script:vmcpu= read-Host "How many CPU "  
+        $script:vmcpu= read-Host "How many CPU "
         hyperv-menu
 }
+
 function vmdisk-menu
 {
         Clear-Host
-        $script:vmdisk= read-Host "How much Disk in GB"  
-        Write-Host "Checking free disk space ...."  
+        $script:vmdisk= read-Host "How much Disk in GB"
+        Write-Host "Checking free disk space ...."
 
-        #$luns = Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -NotMatch "-|11856"} | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending  
-	$luns = Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -notlike "*11856*" -and $_.Name -notlike "*-repl-*" -and $_.Name -notlike "*-p*-d" -and $_.Name -notlike "*-c*-d" -and $_.Name -notlike "*-p*"} | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending
+        #if ($script:vmdisk -gt 250) { 
+        #    Write-Host "Whoa there! Seems like a lot of disk space. Must be less than 250GB. Exiting...." -ForegroundColor Yellow
+        #    start-sleep -s 5
+        #    exit
+        #}
+
+        #Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -like "*$script:vmhostcluster-p*" } | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending
+ 
+        $luns = Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -like "*$script:vmhostcluster-p*" } | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending
         $freespace = $luns[0].FreeSpace
         $vmlun = $luns[0].Name
         $remspace = [math]::round(($luns[0].FreeSpace / 1GB))
 
         Write-Host "$remspace GB Free"
         if ($remspace -gt $script:vmdisk)
-        { 
+        {
             Write-Host "There is enough free disk space. Proceeding...`n"
             Write-Host "the vmlun is $vmlun`n"
-        }
-        else
-        {
+        }  else {
             Write-Host "There is NOT enough free disk space. Exiting...`n"
             start-sleep -s 5
             exit
         }
-        $vmdisk_num = [int]::Parse($script:vmdisk)  
+
+        $vmdisk_num = [int]::Parse($script:vmdisk)
         $vmdisk_num *= 1024
         start-sleep -s 3
         hyperv-menu
 }
+
 function Return-ClusterCSVWithMostFreespace($Clstr)
 {
         $ClusterInfo = Get-SCVMHostCluster <#-VMMServer $VMMServer#> -Name $Clstr
@@ -131,9 +143,9 @@ function Return-ClusterCSVWithMostFreespace($Clstr)
 }
 function printvar-menu
 {
-   
+
         Clear-Host
-        Write-Host "`n"  
+        Write-Host "`n"
         Write-Host "VM Name:         $script:vmname"
         Write-Host "Prod VM:         $script:vmprod"
         Write-Host "OS:              $script:vmos"
@@ -148,13 +160,13 @@ function printvar-menu
         Write-Output "VM CPU:          $script:vmcpu"
         Write-Output "VM DISK:         $script:vmdisk GB"
         Write-Output "VM Diskname      $script:vmdiskname"
-        Write-host "VM result:       $script:vmosdesc"
+        Write-host "VM OS Desc:      $script:vmosdesc"
         Write-Host "`n`n"
         pause
         hyperv-menu
 }
 function vmtag-menu
-{       
+{
         Clear-Host
         Write-Host "Select Host Cluster:"
         Write-Host "1. intBackup_2wk `n2. intBackup_4wk  `n3. intBackup_6wk `n4. dmzBackup_2wk `n5. dmzBackup_4wk  `n6. dmzBackup_6wk `n7. dcpodBackup_2wk `n8. dcpodBackup_4wk  `n9. dcpodBackup_6wk `n10. backup_custom `n11. backup_agent  `n12. noBackup`n"
@@ -176,15 +188,15 @@ function vmtag-menu
 
         hyperv-menu
 }
-function select-osdesc
+function select-os
 {
         Clear-Host
         Write-Host "Select Operating System:"
-        Write-Host "1. Windows Server 2019 Standard `n2. Windows Server 2016 Standard  `n3. Windows Server 2012 R2 Standard `n4. 64-bit edtion of Windows 10 `n5. CentOS Linux 7 (64bit)  `n6. Debian GNU/Linux 8 (64 bit) `n7. Other (64 bit) `n8. Ubuntu Linux 18.04 (64 bit)  `n9. Red Hat Enterprise Linux 5 `n10. Red Hat Enterprise Linux 6 (64 bit) `n11. Red Hat Enterprise Linux 7 (64 bit)  `n12. Red Hat Enterprise Linux 7.3 (64 bit)`n"
+        Write-Host " 1. Windows Server 2019 Standard `n 2. Windows Server 2016 Standard  `n 3. Windows Server 2012 R2 Standard `n 4. 64-bit edition of Windows 10 `n 5. CentOS Linux 7 (64bit)  `n 6. Debian GNU/Linux 8 (64 bit) `n 7. Other (64 bit) `n 8. Ubuntu Linux 18.04 (64 bit)  `n 9. Red Hat Enterprise Linux 5 `n10. Red Hat Enterprise Linux 6 (64 bit) `n11. Red Hat Enterprise Linux 7 (64 bit)  `n12. Red Hat Enterprise Linux 7.3 (64 bit)`n"
         $tagmenuresponse = read-host [Enter Selection]
         Switch ($tagmenuresponse) {
             "1" {$script:vmosdesc = "Windows Server 2019 Standard" }
-            "2" {$script:vmosdesc = "Windwows Server 2016 Standard" }
+            "2" {$script:vmosdesc = "Windows Server 2016 Standard" }
             "3" {$script:vmosdesc = "Windows Server 2012 R2 Standard" }
             "4" {$script:vmosdesc = "64-bit edtion of Windows 10" }
             "5" {$script:vmosdesc = "CentOS Linux 7 (64 bit)" }
@@ -196,32 +208,34 @@ function select-osdesc
             "11" {$script:vmosdesc = "Red Hat Enterprise Linux 7 (64 bit)" }
             "12" {$script:vmosdesc = "Red Hat Enterprise Linux 7.3 (64 bit)" }
             }
-        
+
 }
 function google-it
 {
-    #Import the Google Module
+    #Import the Googlehhjkj Module
     Import-Module UMN-Google
-            
+    
     # Set security protocol to TLS 1.2 to avoid TLS errors
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    
+
     # Google API Authorization
     $scope = "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file"
     #Put the cert file somewhere on the system and change the path accordingly
-    $certPath = "C:\AdminFilies\powershell-cmenard-b4405ad18f0c.p12"
+    $certPath = "C:\Users\adm_rmorse\Documents\powershell-cmenard-b4405ad18f0c.p12"
     #This is the Google service account
     $iss = 'svc-pshell@powershell-cmenard.iam.gserviceaccount.com'
     $certPswd = 'notasecret'
     $accessToken = Get-GOAuthTokenService -scope $scope -certPath $certPath -certPswd $certPswd -iss $iss
-   
+
     #Change the $SpreadsheetID variable with the FileID of your file
     $SpreadsheetID = "1MLtizbtufNWl1-DoaAix191Uf0PXi48f5lziXegvg0g"
-   
+
+
+    #Below is a sample of how to create the array to store the items you want to append to the GSheet
     $import = New-Object System.Collections.ArrayList($null)
     $import.Add( @($script:vmname,$env:USERName,$script:vmhostcluster,$script:vmnetwork,$script:vmram,$script:vmcpu,$script:vmdisk,$script:create_date,$vmhostname,$script:vmtag,$script:vmosdesc,$script:vmprod)) | Out-Null
-    
-    
+
+
     #This is where you actually write the data to the GSheet - replace the -sheetName with your sheetName (or if it is just Sheet 1 replace with that)
     Set-GSheetData -accessToken $accessToken -append -sheetName "Sheet1" -spreadSheetID $SpreadsheetID -values $import -Debug -Verbose
 }
@@ -236,44 +250,50 @@ function hyperv-menu
     do
     {
         Clear-Host
-        if ($script:vmprod -eq $null) 
+        if ($script:vmprod -eq $null)
         { $script:vmprod= read-Host "Is this a Production VM? ([Y]|N) "
           if($script:vmprod -eq "") { $script:vmprod = "Y" }
-  
-          $script:vmos= read-Host "Which Operating System? ([Windows]|Linux) "
-          if($script:vmos -eq "") { $script:vmos = "Windows" }
-        
-        select-osdesc
+
+          #$script:vmos= read-Host "Which Operating System? ([Windows]|Linux) "
+          #if($script:vmos -eq "") { $script:vmos = "Windows" }
+
+        select-os
 
         Clear-Host
         $rand_count = 1
         Write-Host "Select Host Cluster:"
-        Write-Host "1. HVIC01 (internal) `n2. HVIDMZ01 (dmz) `n3. HVIDCPOD01 (dcpod)`n"
+        Write-Host "1. HVIC01 (internal) `n2. HVIC02 (internal) `n3. HVIDMZ01 (dmz) `n4. HVIDCPOD01 (dcpod)`n"
         $menuresponse = read-host [Enter Selection]
         Switch ($menuresponse) {
             "1" {$script:vmhostcluster = "hvic01"
-                        $HostGroup =  Get-SCVMHost -VMHostGroup Internal | sort-object -property name | Select-Object -ExpandProperty name
-                        $vmhostname = Get-Random -InputObject $HostGroup -Count $rand_count
+                        $Cluster = Get-SCVMHostCluster -Name "HVIC01" -VMMServer "phvmmcit.hvi.brown.edu"
+                        $HostsInCluster = Get-SCVMHost -VMHostCluster $Cluster
+                        $vmhostname = Get-Random -InputObject $HostsInCluster -Count $rand_count
                         Write-Host "Choosing $vmhostname as host to install VM." -ForegroundColor Green
                         sleep -s 3
-                        #$vmhostname="hvih07.hvi.brown.edu"
                         $netstr="*Internal*" }
-            "2" {$script:vmhostcluster = "hvidmz01"
-                        $HostGroup =  Get-SCVMHost -VMHostGroup DMZ | sort-object -property name | Select-Object -ExpandProperty name
-                        $vmhostname = Get-Random -InputObject $HostGroup -Count $rand_count
+            "2" {$script:vmhostcluster = "hvic02"
+                        $Cluster = Get-SCVMHostCluster -Name "HVIC02" -VMMServer "phvmmcit.hvi.brown.edu"
+                        $HostsInCluster = Get-SCVMHost -VMHostCluster $Cluster
+                        $vmhostname = Get-Random -InputObject $HostsInCluster -Count $rand_count
                         Write-Host "Choosing $vmhostname as host to install VM." -ForegroundColor Green
                         sleep -s 3
-                        #$vmhostname="hvih11.hvi.brown.edu" 
+                        $netstr="*Internal*" }
+            "3" {$script:vmhostcluster = "hvidmz01"
+                        $Cluster = Get-SCVMHostCluster -Name "HVIDMZ01" -VMMServer "phvmmcit.hvi.brown.edu"
+                        $HostsInCluster = Get-SCVMHost -VMHostCluster $Cluster
+                        $vmhostname = Get-Random -InputObject $HostsInCluster -Count $rand_count
+                        Write-Host "Choosing $vmhostname as host to install VM." -ForegroundColor Green
+                        sleep -s 3
                         $netstr="*DMZ*"}
-            "3" {$script:vmhostcluster = "hvidcpod01"
-                        $HostGroup =  Get-SCVMHost -VMHostGroup DCPOD | sort-object -property name | Select-Object -ExpandProperty name
-                        $vmhostname = Get-Random -InputObject $HostGroup -Count $rand_count
+            "4" {$script:vmhostcluster = "hvidcpod01"
+                        $Cluster = Get-SCVMHostCluster -Name "HVIDCPOD01" -VMMServer "phvmmcit.hvi.brown.edu"
+                        $HostsInCluster = Get-SCVMHost -VMHostCluster $Cluster
+                        $vmhostname = Get-Random -InputObject $HostsInCluster -Count $rand_count
                         Write-Host "Choosing $vmhostname as host to install VM." -ForegroundColor Green
                         sleep -s 3
-                        #$vmhostname="hvih01.hvi.brown.edu" 
                         $netstr="*DCPOD*"  }
-            }
-
+        } # end of switch
 
 
                Clear-Host }
@@ -318,17 +338,17 @@ function create-vm
         }
 
         # Get the target ISO file from the VMM library server
-        $ISO = Get-SCISO -VMMServer $VMMServerName  | where {$_.Name -eq "SCCMDeployBootImage"}      
+        $ISO = Get-SCISO -VMMServer $VMMServerName  | where {$_.Name -eq "SCCMDeployBootImage"}
         New-SCVirtualScsiAdapter -VMMServer $VMMServerName -JobGroup $script:jobgroup01 -AdapterID 7 -ShareVirtualScsiAdapter $false -ScsiControllerType DefaultTypeNoType
-        New-SCVirtualDVDDrive -VMMServer $VMMServerName -JobGroup $JobGroup01 -Bus 0 -LUN 1 #-ISO $ISO -Link        
-        New-SCVirtualNetworkAdapter -VMMServer $VMMServerName -JobGroup $JobGroup01 -MACAddressType Dynamic -Synthetic -EnableVMNetworkOptimization $false -EnableMACAddressSpoofing $false -EnableGuestIPNetworkVirtualizationUpdates $false -IPv4AddressType Dynamic -IPv6AddressType Dynamic # -VirtualNetwork $vmnetworkname
+        New-SCVirtualDVDDrive -VMMServer $VMMServerName -JobGroup $JobGroup01 -Bus 0 -LUN 1 #-ISO $ISO -Link
+        New-SCVirtualNetworkAdapter -VMMServer $VMMServerName -JobGroup $JobGroup01 -MACAddressType Static -Synthetic -EnableVMNetworkOptimization $false -EnableMACAddressSpoofing $false -EnableGuestIPNetworkVirtualizationUpdates $false -IPv4AddressType Dynamic -IPv6AddressType Dynamic # -VirtualNetwork $vmnetworkname
         Write-Host "Creating new Hardware profile ..... " -NoNewLine
         New-SCHardwareProfile -VMMServer $VMMServerName  -Name "$script:vmname Temp Profile" -Description "Temp Profile used to create a VM/Template" -CPUCount $script:vmcpu -MemoryMB $vmram_num -DynamicMemoryEnabled $true -DynamicMemoryMinimumMB 32 -DynamicMemoryMaximumMB $vmram_num -DynamicMemoryBufferPercentage 20 -MemoryWeight $script:vmmemweight -CPUExpectedUtilizationPercent 20 -DiskIops 0 -CPUMaximumPercent 100 -CPUReserve 0 -NumaIsolationRequired $false -NetworkUtilizationMbps 0 -CPURelativeWeight 100 -HighlyAvailable $true -HAVMPriority $script:havmpriority -DRProtectionRequired $false -SecureBootEnabled $true -SecureBootTemplate "MicrosoftWindows" -CPULimitFunctionality $false -CPULimitForMigration $true -CheckpointType Production -Generation 2 -JobGroup $JobGroup01 | Out-Null
         Write-Host  "Done"
-         
+
         $JobGroup02 = [System.Guid]::NewGuid().ToString()
         Write-Host "Creating new Virtual Disk drive ..... " -NoNewLine
-        New-SCVirtualDiskDrive -VMMServer $VMMServerName -SCSI -Bus 0 -LUN 0 -JobGroup $JobGroup02 -VirtualHardDiskSizeMB $vmdisk_num -CreateDiffDisk $false -Dynamic -Filename $vmdiskname -VolumeType BootAndSystem 
+        New-SCVirtualDiskDrive -VMMServer $VMMServerName -SCSI -Bus 0 -LUN 0 -JobGroup $JobGroup02 -VirtualHardDiskSizeMB $vmdisk_num -CreateDiffDisk $false -Dynamic -Filename $vmdiskname -VolumeType BootAndSystem
         Write-Host  "Done"
         $HardwareProfile = Get-SCHardwareProfile -VMMServer $VMMServerName | where {$_.Name -eq "$script:vmname Temp Profile"}
 
@@ -338,44 +358,44 @@ function create-vm
 
         $template = Get-SCVMTemplate -All | where { $_.Name -eq "$VMName Temporary Template" }
         $virtualMachineConfiguration = New-SCVMConfiguration -VMTemplate $template -Name $script:vmname
-        Write-Output $virtualMachineConfiguration
-        
+        #Write-Output $virtualMachineConfiguration
+
         # bob configure this
         $vmHost = Get-SCVMHost -computername $vmhostname
-        Write-Host "Creating Virtual Machine Configuration ..... " -NoNewLine    
+        Write-Host "Creating Virtual Machine Configuration ..... " -NoNewLine
         Set-SCVMConfiguration -VMConfiguration $virtualMachineConfiguration -VMHost $vmHost | Out-Null
         Write-Host  "Done"
-        Write-Host "Updating Virtual Machine Configuration ..... " -NoNewLine 
+        Write-Host "Updating Virtual Machine Configuration ..... " -NoNewLine
         Update-SCVMConfiguration -VMConfiguration $virtualMachineConfiguration | Out-Null
         Write-Host  "Done"
-        Write-Host "Setting Virtual Machine Configuration ..... " -NoNewLine 
+        Write-Host "Setting Virtual Machine Configuration ..... " -NoNewLine
         Set-SCVMConfiguration -VMConfiguration $virtualMachineConfiguration -VMLocation "$vmlun" -PinVMLocation $true | Out-Null
         Write-Host  "Done"
 
         $AllNICConfigurations = Get-SCVirtualNetworkAdapterConfiguration -VMConfiguration $virtualMachineConfiguration
         $VHDConfiguration = Get-SCVirtualHardDiskConfiguration -VMConfiguration $virtualMachineConfiguration
-        Write-Host "Setting Virtual Hard Disk Configuration ..... " -NoNewLine 
+        Write-Host "Setting Virtual Hard Disk Configuration ..... " -NoNewLine
         Set-SCVirtualHardDiskConfiguration -VHDConfiguration $VHDConfiguration -PinSourceLocation $false -PinDestinationLocation $false -PinFileName $false -StorageQoSPolicy $null -DeploymentOption "None" | Out-Null
         Write-Host  "Done"
 
-        Write-Host "Updating Virtual Machine Configuration ..... " -NoNewLine 
+        Write-Host "Updating Virtual Machine Configuration ..... " -NoNewLine
         Update-SCVMConfiguration -VMConfiguration $virtualMachineConfiguration | Out-Null
         Write-Host  "Done"
 
 # #$operatingSystem = Get-SCOperatingSystem | where { $_.Name -eq "Windows Server 2019 Standard" }
 # #This command builds the new VM
-        Write-Host "Building New Virtual Machine  ..... " -NoNewLine 
+        Write-Host "Building New Virtual Machine  ..... " -NoNewLine
         New-SCVirtualMachine -Name $script:vmname -VMConfiguration $virtualMachineConfiguration -Description $script:vmdesc -BlockDynamicOptimization $false -JobGroup $JobGroup02 -ReturnImmediately -StartAction "AlwaysAutoTurnOnVM" -StopAction "SaveVM" | Out-Null # -startvm -OperatingSystem $operatingSystem
         Write-Host  "Done"
 
 
 # Insert the iso file into the virual DVD drive.
-if($script:vmos -eq "Windows") {
+#if($script:vmos -eq "Windows") {
         Write-Host "Insert the ISO File into the Virtual DVD Drive .... " -NoNewLine
         sleep -s 20
         Get-SCVirtualMachine -name $script:vmname | get-scvirtualdvddrive | set-scvirtualdvddrive -iso $iso -link | Out-Null
         Write-Host "Done"
-}
+#}
         start-sleep -s 2
 # Connect the VMs virtual nic to the requested subnet.
         Write-Host "Connecting VM Virtual NIC to subnet .... " -NoNewLine
@@ -389,18 +409,18 @@ if($script:vmos -eq "Windows") {
         Write-Host "Done"
 
 #setting the backup tag
-        Write-Host "Setting Backup Tag  ..... " -NoNewLine 
+        Write-Host "Setting Backup Tag  ..... " -NoNewLine
         Set-SCVirtualMachine -VM $script:vmname -Tag $script:vmtag | Out-Null
         Write-Host  "Done"
         start-sleep -s 2
 
 #setting the os description tag
         Write-Host "Setting Operating System description ..... " -NoNewLine
-        Set-SCVirtualMachine -VM $script:vmname -Tag $script:vmosdesc | Out-Null
+        Set-SCVirtualMachine -VM $script:vmname -OperatingSystem $script:vmosdesc | Out-Null
         Write-Host  "Done"
         start-sleep -s 2
 
-	$script:create_date = Get-Date -Format "dddd MM/dd/yyyy HH:mm K"
+        $script:create_date = Get-Date -Format "dddd MM/dd/yyyy HH:mm K"
 
 #send email
         $html = "<html>"
@@ -424,7 +444,8 @@ if($script:vmos -eq "Windows") {
         $html += "</table></body></html>"
         $body =  $html
 
-	Send-MailMessage -From 'HyperV_VM_Creation@brown.edu' -To 'CIS-VO@brown.edu' -Bcc 'virtualization-and-or-aaaadx7q6nbsbtu7esldlhfn2u@brown-cis.slack.com' -Subject 'HyperV VM Created' -SmtpServer 'mail-relay.brown.edu' -Body "$body" -BodyAsHtml
+
+        Send-MailMessage -From 'HyperV_VM_Creation@brown.edu' -To 'CIS-VO@brown.edu' -Bcc 'virtualization-and-or-aaaadx7q6nbsbtu7esldlhfn2u@brown-cis.slack.com' -Subject 'HyperV VM Created' -SmtpServer 'mail-relay.brown.edu' -Body "$body" -BodyAsHtml
     
         google-it
 
@@ -453,5 +474,6 @@ $script:jobgroup01 = [System.Guid]::NewGuid().ToString()
 $VMMServerName = "phvmmcit.hvi.brown.edu"
 start-sleep -s 2
 
-Main-Menu
+#Main-Menu
+hyperv-menu
 
