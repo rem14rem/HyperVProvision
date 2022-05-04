@@ -1,5 +1,5 @@
 ﻿#
-# Version: 1.5.0.1
+# Version: 1.6.0.1 - added code for memory lnd disk imit
 #
 
 function Main-Menu
@@ -85,8 +85,9 @@ function vmram-menu
         $script:vmram= read-Host "How much RAM in GB "
         $vmram_num = [int]::Parse($script:vmram)
         if ($vmram_num -ge 64) 
-        { Write-Host "Memory seems pretty high. Are you sure?"-ForegroundColor Yellow
+        { Write-Host "Memory seems pretty high. Did you get approval from the VO team?"-ForegroundColor Yellow
             pause
+            exit
         }
         $vmram_num *= 1024
         hyperv-menu
@@ -105,11 +106,11 @@ function vmdisk-menu
         $script:vmdisk= read-Host "How much Disk in GB"
         Write-Host "Checking free disk space ...."
 
-        #if ($script:vmdisk -gt 250) { 
-        #    Write-Host "Whoa there! Seems like a lot of disk space. Must be less than 250GB. Exiting...." -ForegroundColor Yellow
-        #    start-sleep -s 5
-        #    exit
-        #}
+        if ($script:vmdisk -gt 500) { 
+            Write-Host "Whoa there! Seems like a lot of disk space. Must be less than 500GB. Exiting...." -ForegroundColor Yellow
+            start-sleep -s 5
+            exit
+        }
 
         #Get-SCStorageVolume -VMHost $vmhostname | where-object {$_.Name -like "*$script:vmhostcluster-p*" } | Select-Object -Property Name, FreeSpace | Sort-Object FreeSpace -Descending
  
